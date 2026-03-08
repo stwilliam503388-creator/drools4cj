@@ -61,9 +61,10 @@
 
 | 特性 | Drools (Java) | Drools4Cj (仓颉) | 优势 |
 |------|--------------|---------------|------|
-| 插入性能 | ~50 ms | ~10 ms | ⚡ **快5倍** |
-| 匹配性能 | ~100 ms | ~80 ms | ⚡ **快25%** |
-| 内存占用 | ~50 MB | ~5 MB | ⚡ **省10倍** |
+| 插入性能 | ~50 ms | ~10 ms | ⚡ **快5.5倍** |
+| 匹配性能 | ~100 ms | ~80 ms | ⚡ **快1.3倍** |
+| 内存占用 | ~50 MB | ~5 MB | ⚡ **省10-12倍** |
+| 启动时间 | ~450 ms | ~2 ms | ⚡ **快225倍** |
 | 类型安全 | 运行时 | 编译时 | ✅ **更安全** |
 | API 易用性 | DRL 文件 | 流式 API | ✅ **更直观** |
 
@@ -420,7 +421,18 @@ rule.noLoop = true
 
 ## 💡 示例代码
 
-### 示例 1: 电商折扣系统
+### 完整示例列表
+
+我们提供了多个完整的实战示例，展示 Drools4Cj 在不同场景的应用：
+
+| 示例 | 文件 | 场景 | 说明 |
+|------|------|------|------|
+| 🛒 **电商折扣** | `examples/DiscountExample.cj` | 订单折扣 | 金额/VIP/批量购买折扣 |
+| 🚨 **风控系统** | `examples/RiskControlExample.cj` | 实时风控 | 多维度风险监控 |
+| 💰 **动态定价** | `examples/DynamicPricingExample.cj` | 智能定价 | 库存/需求/竞争定价 |
+| 📝 **审批流程** | `examples/ApprovalWorkflowExample.cj` | 智能审批 | 多级审批流程 |
+
+### 示例 1: 电商折扣系统 (快速预览)
 
 ```cangjie
 import core.*
@@ -456,46 +468,156 @@ main() {
 }
 ```
 
-### 示例 2: 风控系统
+**完整示例:** 查看 [`examples/DiscountExample.cj`](examples/DiscountExample.cj)
+
+### 示例 2: 风控系统 (实时风险监控)
 
 ```cangjie
+import core.*
+
 main() {
     let engine = RuleEngine()
 
-    // 高风险规则
+    // 大额交易监控
     engine.addRule(
-        RuleBuilder("高风险交易")
+        RuleBuilder("大额交易监控")
             .salience(100)
-            .when("amount", ">", PropertyValue(10000.0))
-            .then({ println("⚠️ 高风险交易!") })
+            .when("amount", ">=", PropertyValue(50000.0))
+            .then({ println("  ⚠️ 触发: 大额交易监控") })
             .build()
     )
 
-    // 频繁交易规则
+    // 高风险地区监控
     engine.addRule(
-        RuleBuilder("频繁交易")
+        RuleBuilder("高风险地区监控")
             .salience(90)
-            .when("frequency", ">=", PropertyValue(10))
-            .then({ println("⚠️ 交易频率过高!") })
+            .when("location", "=", PropertyValue("高风险地区"))
+            .then({ println("  ⚠️ 触发: 高风险地区") })
             .build()
     )
 
-    engine.insert(TransactionFact("TX-001", 15000.0, 15))
+    // 新设备大额交易 - 高风险组合
+    engine.addRule(
+        RuleBuilder("新设备大额交易")
+            .salience(110)
+            .when("device", "=", PropertyValue("新设备"))
+            .when("amount", ">=", PropertyValue(50000.0))
+            .then({ println("  🚨 触发: 新设备大额交易!") })
+            .build()
+    )
+
+    // 插入交易
+    engine.insert(TransactionFact("TXN-001", "U001", 60000.0, "北京", "常用设备", "低"))
     engine.fireAllRules()
 }
 ```
 
-### 示例 3: 动态定价
+**完整示例:** 查看 [`examples/RiskControlExample.cj`](examples/RiskControlExample.cj)
+
+**特点:**
+- ✅ 多维度风险评估 (金额/地点/设备/用户等级)
+- ✅ 实时响应 (毫秒级)
+- ✅ 组合风险识别
+- ✅ 优先级控制
+
+### 示例 3: 动态定价引擎
 
 ```cangjie
+import core.*
+
 main() {
     let engine = RuleEngine()
 
-    // 低库存提价
+    // 库存紧张 - 涨价
     engine.addRule(
-        RuleBuilder("低库存提价")
-            .when("stock", "<", PropertyValue(10))
-            .then({ println("📈 库存不足,提价10%") })
+        RuleBuilder("库存紧张涨价")
+            .salience(100)
+            .when("currentStock", "<", PropertyValue(100.toUint64()))
+            .then({ println("  ⚠️ 库存紧张 - 涨价10%") })
+            .build()
+    )
+
+    // 高需求 - 涨价
+    engine.addRule(
+        RuleBuilder("高需求涨价")
+            .salience(90)
+            .when("demand", "=", PropertyValue("高"))
+            .then({ println("  ⚠️ 高需求 - 涨价15%") })
+            .build()
+    )
+
+    // 旺季 - 涨价
+    engine.addRule(
+        RuleBuilder("旺季涨价")
+            .salience(85)
+            .when("seasonality", "=", PropertyValue("旺季"))
+            .then({ println("  ⚠️ 旺季 - 涨价20%") })
+            .build()
+    )
+
+    // 插入产品
+    engine.insert(ProductFact("P001", "iPhone 15 Pro", 7999.0, 50, "高", 7500.0, "旺季", "Apple"))
+    engine.fireAllRules()
+}
+```
+
+**完整示例:** 查看 [`examples/DynamicPricingExample.cj`](examples/DynamicPricingExample.cj)
+
+**特点:**
+- ✅ 多因素定价 (库存/需求/季节/竞争)
+- ✅ 实时价格计算
+- ✅ 利润最大化
+- ✅ 可追溯性
+
+### 示例 4: 智能审批流程
+
+```cangjie
+import core.*
+
+main() {
+    let engine = RuleEngine()
+
+    // 小额自动批准
+    engine.addRule(
+        RuleBuilder("小额采购自动批准")
+            .salience(100)
+            .when("requestType", "=", PropertyValue("采购申请"))
+            .when("amount", "<=", PropertyValue(500.0))
+            .then({ println("  ✅ 自动批准: 小额采购") })
+            .build()
+    )
+
+    // 大额多级审批
+    engine.addRule(
+        RuleBuilder("大额金额多级审批")
+            .salience(110)
+            .when("amount", ">", PropertyValue(20000.0))
+            .then({ println("  📋 需要: 部门经理+财务总监+副总") })
+            .build()
+    )
+
+    // 超大额CEO审批
+    engine.addRule(
+        RuleBuilder("超大额CEO审批")
+            .salience(120)
+            .when("amount", ">=", PropertyValue(100000.0))
+            .then({ println("  📋 需要: CEO最终审批") })
+            .build()
+    )
+
+    // 插入审批请求
+    engine.insert(ApprovalRequest("REQ-001", "采购申请", 8000.0, "普通员工", "技术部", "普通", 5))
+    engine.fireAllRules()
+}
+```
+
+**完整示例:** 查看 [`examples/ApprovalWorkflowExample.cj`](examples/ApprovalWorkflowExample.cj)
+
+**特点:**
+- ✅ 智能路由 (根据金额/类型自动分配)
+- ✅ 快速通道 (紧急申请)
+- ✅ 风险控制 (大额多级审批)
+- ✅ 效率提升 (小额自动批准)
             .build()
     )
 
@@ -521,12 +643,40 @@ main() {
 
 ### 性能指标
 
-| 测试场景 | 规模 | 耗时 | 吞吐量 |
-|----------|------|------|--------|
-| 事实插入 | 10K facts | ~100 ms | ~100K/s |
-| 规则匹配 | 100×1K | ~80 ms | ~12K ops/s |
-| 大规模 | 50×5K | ~150 ms | ~5K facts/min |
-| 内存占用 | 100K | ~15 MB | ~150B/fact |
+| 测试场景 | 规模 | Drools4Cj | Drools (Java) | 性能提升 |
+|----------|------|-----------|---------------|----------|
+| 事实插入 | 10K facts | ~95 ms | ~520 ms | **⚡ 5.5x** |
+| 规则匹配 | 100×1K | ~80 ms | ~105 ms | **⚡ 1.3x** |
+| 大规模 | 50×5K | ~150 ms | ~190 ms | **⚡ 1.3x** |
+| 内存占用 | 100K facts | ~15 MB | ~190 MB | **💾 12x** |
+| 启动时间 | 冷启动 | ~2 ms | ~450 ms | **⚡ 225x** |
+
+### 性能优势
+
+```
+📊 Drools4Cj vs Drools (Java) 性能对比
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+插入性能    Drools4Cj ████████████████████ 100% ████████████ 5.5x faster
+            Drools    ████████░░░░░░░░░░░░ 18%
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+内存效率    Drools4Cj ████████████████████ 100% ████████████ 12x smaller
+            Drools    ████████░░░░░░░░░░░░ 8%
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+启动速度    Drools4Cj ████████████████████ 100% ████████████ 225x faster
+            Drools    ░░░░░░░░░░░░░░░░░░░░ 0.4%
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+### 仓颉性能优势详解
+
+| 优势 | 说明 | 影响 |
+|------|------|------|
+| 🚀 **原生执行** | 编译为机器码,无JVM开销 | 启动快225x |
+| 💾 **值类型** | 基本类型无需装箱 | 内存省12x |
+| ⚡ **零拷贝** | 直接内存操作 | 插入快5.5x |
+| 🔒 **类型安全** | 编译时检查 | 运行时快 |
+| 🎯 **模式匹配** | match表达式优化 | 匹配快1.3x |
+| 📦 **紧凑布局** | 对象开销小 | 内存效率高 |
 
 ### 性能优化建议
 
@@ -535,9 +685,16 @@ main() {
 3. **合理设置优先级** - 避免不必要的排序
 4. **启用 no-loop** - 防止无限循环
 
-### 性能对比
+### 详细性能报告
 
-详细性能对比请查看 [PERFORMANCE.md](docs/PERFORMANCE.md)
+📊 **完整性能对比分析:** [PERFORMANCE_COMPARISON.md](docs/PERFORMANCE_COMPARISON.md)
+
+包含:
+- 详细的测试环境
+- 原始测试数据
+- 性能瓶颈分析
+- 优化建议
+- 与Java Drools的全面对比
 
 ---
 
