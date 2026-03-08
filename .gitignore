@@ -1,0 +1,34 @@
+# Build outputs
+*.o
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+
+#仓颉编译输出
+.cj/
+.o/
+
+# 测试输出
+/tmp/drools4cj_tests/
+*.output
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 日志
+*.log
+logs/
+
+# 临时文件
+*.tmp
+*.temp
