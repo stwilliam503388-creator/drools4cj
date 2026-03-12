@@ -6,6 +6,7 @@
 
 - **操作系统**: macOS 11+ / Linux (Ubuntu 20.04+)
 - **仓颉编译器**: cjc 1.0.0 或更高版本
+- **仓颉包管理器**: cjpm 1.0.0 或更高版本 (推荐)
 - **内存**: 至少 2GB RAM
 - **磁盘空间**: 至少 100MB 可用空间
 
@@ -18,17 +19,23 @@
 
 ## 🔧 安装步骤
 
-### 1. 安装仓颉编译器
+### 1. 安装仓颉工具链
 
 #### macOS
 
 ```bash
-# 使用 Homebrew 安装 (推荐)
-brew install cjc
+# 下载仓颉工具链
+curl -L https://cangjie-lang.cn/download -o cangjie-toolchain.tar.gz
+
+# 解压安装
+tar -xzf cangjie-toolchain.tar.gz
+
+# 添加到 PATH (在 ~/.zshrc 或 ~/.bashrc 中)
+export PATH=$PATH:/path/to/cangjie/bin
 
 # 验证安装
-cjc --version
-# 输出: cjc version 1.0.0
+cjc --version   # cjc version 1.0.0
+cjpm --version  # cjpm version 1.0.0
 ```
 
 #### Linux
@@ -45,6 +52,7 @@ export PATH=$PATH:/path/to/cjc/bin
 
 # 验证安装
 cjc --version
+cjpm --version
 ```
 
 ### 2. 克隆项目
@@ -62,18 +70,29 @@ cd drools4cj
 
 ### 3. 编译项目
 
+#### 方式一：使用 cjpm (推荐)
+
 ```bash
-# 编译核心模块
-cd core
+# 使用仓颉包管理器构建
+cjpm build
+
+# 运行测试
+cjpm test
+```
+
+#### 方式二：直接编译
+
+```bash
+# 编译核心模块 (src/ 目录)
+cd src
 cjc -c *.cj
+cd ..
 
 # 编译示例
-cd ../examples
-cjc DiscountExample.cj -o discount_example
+cjc examples/DiscountExample.cj -o discount_example
 
 # 编译测试(如果需要)
-cd ../tests
-cjc *.cj
+cjc -c src/*.cj tests/unit/FactTest.cj
 ```
 
 ### 4. 运行示例

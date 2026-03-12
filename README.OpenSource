@@ -1,0 +1,66 @@
+# 开源声明 (Open Source Declaration)
+
+## 项目名称
+
+Drools4Cj - Drools 规则引擎的仓颉语言实现
+
+## 版本
+
+v1.1.0
+
+## 许可证
+
+本项目遵循 **MIT License** 开源协议。
+
+```
+MIT License
+
+Copyright (c) 2026 drools4cj contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## 开源声明
+
+本项目为开源软件，遵循以下原则：
+
+1. **代码开放**：所有源代码公开可见，任何人均可查看、使用和修改
+2. **免费使用**：无论商业或非商业用途，均可免费使用
+3. **贡献欢迎**：欢迎社区成员提交 Issue 和 Pull Request
+4. **版权保留**：使用本软件时请保留原始版权声明
+
+## 第三方依赖
+
+本项目仅依赖仓颉标准库，无其他第三方依赖：
+
+| 依赖 | 版本 | 许可证 |
+|------|------|--------|
+| 仓颉标准库 (std) | 1.0.0+ | 仓颉语言许可 |
+
+## 联系方式
+
+- **GitHub**: https://github.com/stwilliam503388-creator/drools4cj
+- **Issue 追踪**: https://github.com/stwilliam503388-creator/drools4cj/issues
+
+## 仓颉生态
+
+本项目是仓颉（Cangjie）编程语言生态的三方库，遵循：
+- [CangjieSkills 最佳实践](https://gitcode.com/Cangjie-SIG/CangjieSkills)
+- [Cangjie-TPC 三方库规范](https://gitcode.com/Cangjie-TPC/Community)
+- 仓颉官方包管理标准 (cjpm)
