@@ -25,6 +25,11 @@ public abstract class Fact {
      * 检查事实是否匹配条件
      */
     public abstract func matches(condition: Condition): Bool
+
+    /**
+     * 返回事实的字符串表示
+     */
+    public abstract func toString(): String
 }
 
 // ==================== 具体事实类 ====================
@@ -83,7 +88,7 @@ public class OrderFact : Fact {
         }
     }
 
-    public func toString(): String {
+    public override func toString(): String {
         return "Order[id=${id}, customer=${customer}, amount=${amount}, items=${items}]"
     }
 }
@@ -130,7 +135,7 @@ public class ProductFact : Fact {
         }
     }
 
-    public func toString(): String {
+    public override func toString(): String {
         return "Product[id=${id}, name=${name}, price=${price}, stock=${stock}]"
     }
 }
@@ -184,7 +189,7 @@ public class CustomerFact : Fact {
         }
     }
 
-    public func toString(): String {
+    public override func toString(): String {
         return "Customer[id=${id}, name=${name}, level=${level}, points=${points}, orders=${totalOrders}]"
     }
 }

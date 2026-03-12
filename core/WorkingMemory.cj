@@ -102,6 +102,9 @@ public class WorkingMemory {
      * 根据ID获取事实
      */
     public func getFact(id: String): Option<Fact> {
+        if (!facts.contains(id)) {
+            return None
+        }
         return Some(facts[id])
     }
 
@@ -127,6 +130,9 @@ public class WorkingMemory {
      * 获取事实版本
      */
     public func getVersion(factId: String): Option<Int64> {
+        if (!versions.contains(factId)) {
+            return None
+        }
         return Some(versions[factId])
     }
 
@@ -188,12 +194,7 @@ public class WorkingMemory {
             println("  (无事实)")
         } else {
             for ((_, fact) in facts) {
-                match (fact) {
-                    case OrderFact => println("  ${(fact as OrderFact).toString()}")
-                    case ProductFact => println("  ${(fact as ProductFact).toString()}")
-                    case CustomerFact => println("  ${(fact as CustomerFact).toString()}")
-                    case _ => println("  ${fact.type}:${fact.id}")
-                }
+                println("  ${fact.toString()}")
             }
         }
 

@@ -6,9 +6,15 @@
 *.dylib
 *.a
 
-#仓颉编译输出
+# 仓颉编译输出
 .cj/
 .o/
+build/
+dist/
+
+# cjpm 构建输出
+cjpm-build/
+target/
 
 # 测试输出
 /tmp/drools4cj_tests/
