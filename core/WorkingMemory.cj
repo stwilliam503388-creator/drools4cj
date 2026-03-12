@@ -43,7 +43,9 @@ public class WorkingMemory {
         if (!typeIndex.contains(fact.type)) {
             typeIndex[fact.type] = ArrayList<Fact>()
         }
-        typeIndex[fact.type]?.append(fact)
+        if (let factList = typeIndex[fact.type]) {
+            factList.add(fact)
+        }
 
         println("[WorkingMemory] ➕ 插入事实: ${fact.type}:${fact.id} (v${version})")
 
@@ -102,7 +104,10 @@ public class WorkingMemory {
      * 根据ID获取事实
      */
     public func getFact(id: String): Option<Fact> {
-        return Some(facts[id])
+        if (let fact = facts[id]) {
+            return Some(fact)
+        }
+        return None
     }
 
     /**
@@ -127,7 +132,10 @@ public class WorkingMemory {
      * 获取事实版本
      */
     public func getVersion(factId: String): Option<Int64> {
-        return Some(versions[factId])
+        if (let version = versions[factId]) {
+            return Some(version)
+        }
+        return None
     }
 
     /**
@@ -189,9 +197,9 @@ public class WorkingMemory {
         } else {
             for ((_, fact) in facts) {
                 match (fact) {
-                    case OrderFact => println("  ${(fact as OrderFact).toString()}")
-                    case ProductFact => println("  ${(fact as ProductFact).toString()}")
-                    case CustomerFact => println("  ${(fact as CustomerFact).toString()}")
+                    case f: OrderFact => println("  ${f.toString()}")
+                    case f: ProductFact => println("  ${f.toString()}")
+                    case f: CustomerFact => println("  ${f.toString()}")
                     case _ => println("  ${fact.type}:${fact.id}")
                 }
             }

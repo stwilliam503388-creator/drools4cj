@@ -177,7 +177,7 @@ public class RuleEngine {
 
         // 模式匹配
         let matches = patternMatcher.matchRules(rules)
-        stats.totalMatches += matches.size.toUint64()
+        stats.totalMatches += matches.size
 
         // 填充议程
         for (match in matches) {
