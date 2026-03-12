@@ -1,0 +1,15 @@
+[package]
+name = "drools4cj"
+version = "1.2.0"
+description = "Drools规则引擎的仓颉语言实现 - A Drools-inspired rule engine for the Cangjie programming language"
+authors = ["stwilliam503388-creator"]
+license = "MIT"
+
+[package.metadata]
+homepage = "https://github.com/stwilliam503388-creator/drools4cj"
+repository = "https://github.com/stwilliam503388-creator/drools4cj"
+keywords = ["rule-engine", "drools", "cangjie", "business-rules"]
+
+[dependencies]
+
+[dev-dependencies]

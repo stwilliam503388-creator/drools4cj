@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Drools4Cj Logo](https://img.shields.io/badge/Drools4Cj-v1.0.0-blue.svg)
+![Drools4Cj Logo](https://img.shields.io/badge/Drools4Cj-v1.2.0-blue.svg)
 ![Cangjie](https://img.shields.io/badge/Cangjie-1.0.0-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Tests](https://img.shields.io/badge/Tests-33%20 Passing-brightgreen.svg)
@@ -112,6 +112,7 @@
 ### 环境要求
 
 - 仓颉编译器 `cjc` (1.0.0+)
+- 仓颉包管理器 `cjpm` (1.0.0+)
 - 仓颉标准库
 - macOS / Linux 操作系统
 
@@ -119,11 +120,19 @@
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/yourusername/drools4cj.git
+git clone https://github.com/stwilliam503388-creator/drools4cj.git
 cd drools4cj
 
 # 2. 检查环境
 cjc --version
+cjpm --version
+
+# 3. 使用 cjpm 构建项目 (推荐)
+cjpm build
+
+# 或者手动编译示例
+cd examples
+cjc DiscountExample.cj -o discount_example
 ```
 
 ### 5分钟快速体验
