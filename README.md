@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Drools4Cj Logo](https://img.shields.io/badge/Drools4Cj-v1.0.0-blue.svg)
+![Drools4Cj Logo](https://img.shields.io/badge/Drools4Cj-v1.1.0-blue.svg)
 ![Cangjie](https://img.shields.io/badge/Cangjie-1.0.0-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Tests](https://img.shields.io/badge/Tests-33%20 Passing-brightgreen.svg)
@@ -112,18 +112,39 @@
 ### 环境要求
 
 - 仓颉编译器 `cjc` (1.0.0+)
+- 仓颉包管理器 `cjpm` (1.0.0+)
 - 仓颉标准库
 - macOS / Linux 操作系统
 
 ### 安装
+
+#### 方式一：使用 cjpm (推荐)
 
 ```bash
 # 1. 克隆项目
 git clone https://github.com/yourusername/drools4cj.git
 cd drools4cj
 
-# 2. 检查环境
-cjc --version
+# 2. 使用 cjpm 构建
+cjpm build
+
+# 3. 运行测试
+cjpm test
+```
+
+#### 方式二：直接编译
+
+```bash
+# 克隆项目
+git clone https://github.com/yourusername/drools4cj.git
+cd drools4cj
+
+# 编译核心模块
+cjc -c src/*.cj
+
+# 运行示例
+cjc examples/DiscountExample.cj -o discount_example
+./discount_example
 ```
 
 ### 5分钟快速体验
@@ -712,7 +733,13 @@ main() {
 ### 运行测试
 
 ```bash
-# 运行所有测试
+# 方式一：使用 cjpm (推荐)
+cjpm test
+
+# 方式二：使用测试脚本 (新结构)
+./test/run_tests.sh
+
+# 方式三：使用原始测试脚本
 ./tests/run_all_tests.sh
 
 # 查看测试报告
@@ -834,12 +861,15 @@ DEALINGS IN THE SOFTWARE.
 - [Drools](https://github.com/kiegroup/drools) - Java 规则引擎
 - [仓颉编程语言](https://cangjie-lang.cn/) - 华为编程语言
 - [Rete Algorithm](https://en.wikipedia.org/wiki/Rete_algorithm) - 算法基础
+- [CangjieSkills](https://gitcode.com/Cangjie-SIG/CangjieSkills) - 仓颉三方库最佳实践指南
+- [Cangjie-TPC](https://gitcode.com/Cangjie-TPC/Community) - 仓颉三方组件社区
 
 ### 参考资源
 
 - [Drools 官方文档](https://docs.drools.org/)
 - [仓颉官方文档](https://cangjie-lang.cn/docs/)
 - [业务规则引擎最佳实践](https://www.drools.org/learn/)
+- [仓颉三方库开发规范](https://gitcode.com/Cangjie-SIG/CangjieSkills)
 
 ---
 

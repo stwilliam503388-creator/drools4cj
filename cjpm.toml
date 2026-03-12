@@ -1,0 +1,11 @@
+[package]
+cjc-version = "1.0.0"
+name = "drools4cj"
+description = "Drools 规则引擎的仓颉语言实现 - 基于仓颉语言特性，提供轻量级、高性能的规则引擎"
+version = "1.1.0"
+target-dir = "build"
+src-dir = "src"
+output-type = "static"
+compile-option = "-O2"
+
+[dependencies]
