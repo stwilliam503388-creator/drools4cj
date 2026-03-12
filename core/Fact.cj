@@ -25,6 +25,13 @@ public abstract class Fact {
      * 检查事实是否匹配条件
      */
     public abstract func matches(condition: Condition): Bool
+
+    /**
+     * 返回事实的字符串表示
+     */
+    public open func toString(): String {
+        return "${type}:${id}"
+    }
 }
 
 // ==================== 具体事实类 ====================
