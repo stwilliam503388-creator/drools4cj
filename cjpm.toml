@@ -1,0 +1,8 @@
+[package]
+cjc-version = "0.53.4"
+name = "drools4cj"
+description = "Drools 规则引擎的仓颉(Cangjie)语言实现 - 高性能、类型安全的业务规则引擎"
+version = "1.1.0"
+compile-option = ""
+
+[dependencies]

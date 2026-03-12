@@ -6,6 +6,7 @@
 package core
 
 import std.collection.ArrayList
+import std.collection.HashSet
 
 // ==================== 模式匹配器 ====================
 

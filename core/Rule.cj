@@ -133,6 +133,13 @@ public class Rule {
     }
 
     /**
+     * 获取描述
+     */
+    public func getDescription(): String {
+        return description
+    }
+
+    /**
      * 设置禁止循环
      */
     public func setNoLoop(value: Bool) {
