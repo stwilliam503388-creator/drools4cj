@@ -6,6 +6,7 @@
 package core
 
 import std.collection.ArrayList
+import std.collection.HashSet
 
 // ==================== 模式匹配器 ====================
 
@@ -229,19 +230,13 @@ public class Agenda {
                 fireCount++
 
                 // 通知监听器
-                if (listener != None) {
-                    let l = listener as RuleListener
-                    l.onBeforeExecute(activation.rule, activation.facts[0])
-                }
+                listener?.onBeforeExecute(activation.rule, activation.facts[0])
 
                 // 执行规则
                 activation.rule.execute()
 
                 // 通知监听器
-                if (listener != None) {
-                    let l = listener as RuleListener
-                    l.onAfterExecute(activation.rule, activation.facts[0])
-                }
+                listener?.onAfterExecute(activation.rule, activation.facts[0])
 
                 fired++
             }

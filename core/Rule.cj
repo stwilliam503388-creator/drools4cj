@@ -234,6 +234,14 @@ public class RuleBuilder {
     }
 
     /**
+     * 添加条件(PropertyValue)
+     */
+    public func when(field: String, operator: String, value: PropertyValue): RuleBuilder {
+        rule.addCondition(field, operator, value)
+        return this
+    }
+
+    /**
      * 添加条件(整数)
      */
     public func when(field: String, operator: String, value: Int64): RuleBuilder {

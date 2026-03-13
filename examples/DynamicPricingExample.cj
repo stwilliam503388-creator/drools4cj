@@ -4,16 +4,21 @@
  * 说明: 演示如何使用规则引擎实现智能定价系统
  */
 
-package core
+package examples
 
 import std.collection.ArrayList
+import core.*
+import core.Fact
+import core.Condition
+import core.PropertyValue
+import core.RuleEngine
+import core.RuleEngineBuilder
+import core.RuleBuilder
 
 /**
- * 产品事实
+ * 动态产品事实(扩展版,含更多定价字段)
  */
-public class ProductFact : Fact {
-    public var type: String
-    public var id: String
+public class DynamicProductFact : Fact {
     public var name: String
     public var basePrice: Float64
     public var currentStock: Int64
@@ -23,8 +28,7 @@ public class ProductFact : Fact {
     public var brand: String
 
     public init(id: String, name: String, basePrice: Float64, stock: Int64, demand: String, compPrice: Float64, season: String, brand: String) {
-        this.type = "Product"
-        this.id = id
+        super("DynamicProduct", id)
         this.name = name
         this.basePrice = basePrice
         this.currentStock = stock
@@ -34,7 +38,7 @@ public class ProductFact : Fact {
         this.brand = brand
     }
 
-    public func matches(condition: Condition): Bool {
+    public override func matches(condition: Condition): Bool {
         match (condition.field) {
             case "basePrice" => {
                 match (condition.operator) {
@@ -135,7 +139,7 @@ main() {
     engine.addRule(
         RuleBuilder("库存紧张涨价")
             .salience(100)
-            .when("currentStock", "<", PropertyValue(100.toUint64()))
+            .when("currentStock", "<", PropertyValue(100))
             .then({ println("  ⚠️ 触发: 库存紧张 - 涨价10%") })
             .build()
     )
@@ -171,7 +175,7 @@ main() {
     engine.addRule(
         RuleBuilder("库存积压降价")
             .salience(80)
-            .when("currentStock", ">", PropertyValue(1000.toUint64()))
+            .when("currentStock", ">", PropertyValue(1000))
             .then({ println("  ⚠️ 触发: 库存积压 - 降价15%") })
             .build()
     )
@@ -214,7 +218,7 @@ main() {
         println("\n🔍 产品: ${name}")
 
         engine.reset()
-        let fact = ProductFact(id, name, price, stock.toUint64(), demand, compPrice, season, brand)
+        let fact = DynamicProductFact(id, name, price, stock, demand, compPrice, season, brand)
         engine.insert(fact)
 
         let result = PricingResult(id, name, price)

@@ -4,16 +4,21 @@
  * 说明: 演示如何使用规则引擎实现智能审批流程
  */
 
-package core
+package examples
 
 import std.collection.ArrayList
+import core.*
+import core.Fact
+import core.Condition
+import core.PropertyValue
+import core.RuleEngine
+import core.RuleEngineBuilder
+import core.RuleBuilder
 
 /**
  * 审批请求事实
  */
 public class ApprovalRequest : Fact {
-    public var type: String
-    public var id: String
     public var requestType: String
     public var amount: Float64
     public var requesterLevel: String
@@ -22,19 +27,18 @@ public class ApprovalRequest : Fact {
     public var attachments: Int64
     public var requestTime: String
 
-    public init(id: String, type: String, amount: Float64, level: String, dept: String, urgency: String, attachments: Int64) {
-        self.type = "ApprovalRequest"
-        self.id = id
-        self.requestType = type
-        self.amount = amount
-        self.requesterLevel = level
-        self.department = dept
-        self.urgency = urgency
-        self.attachments = attachments
-        self.requestTime = "2026-03-08 10:00:00"
+    public init(id: String, requestType: String, amount: Float64, level: String, dept: String, urgency: String, attachments: Int64) {
+        super("ApprovalRequest", id)
+        this.requestType = requestType
+        this.amount = amount
+        this.requesterLevel = level
+        this.department = dept
+        this.urgency = urgency
+        this.attachments = attachments
+        this.requestTime = "2026-03-08 10:00:00"
     }
 
-    public func matches(condition: Condition): Bool {
+    public override func matches(condition: Condition): Bool {
         match (condition.field) {
             case "amount" => {
                 match (condition.operator) {
@@ -61,6 +65,15 @@ public class ApprovalRequest : Fact {
             case "requestType" => {
                 match (condition.operator) {
                     case "=" => return requestType == condition.value.asString()
+                    case _ => return false
+                }
+            }
+            case "attachments" => {
+                match (condition.operator) {
+                    case "=" => return attachments == condition.value.asInt64()
+                    case "!=" => return attachments != condition.value.asInt64()
+                    case ">" => return attachments > condition.value.asInt64()
+                    case "<" => return attachments < condition.value.asInt64()
                     case _ => return false
                 }
             }
@@ -118,8 +131,10 @@ public class ApprovalResult {
         } else if (rejectReason != "") {
             sb += "       ❌ 拒绝: ${rejectReason}\n"
         } else {
-            for ((index, approver) in approvalPath.enumerated()) {
-                sb += "       ${index + 1}. ${approver}\n"
+            var idx = 0
+            for (approver in approvalPath) {
+                sb += "       ${idx + 1}. ${approver}\n"
+                idx++
             }
         }
         return sb
@@ -200,7 +215,7 @@ main() {
     engine.addRule(
         RuleBuilder("缺少附件拒绝")
             .salience(130)
-            .when("attachments", "=", PropertyValue(0.toUint64()))
+            .when("attachments", "=", PropertyValue(0))
             .then({ println("  ❌ 拒绝: 缺少必要附件") })
             .build()
     )
@@ -236,7 +251,7 @@ main() {
         println("\n🔍 场景: ${desc}")
 
         engine.reset()
-        engine.insert(ApprovalRequest(id, type, amount, level, dept, urgency, attachments.toUint64()))
+        engine.insert(ApprovalRequest(id, type, amount, level, dept, urgency, attachments))
 
         let result = ApprovalResult(id, type, amount)
 
