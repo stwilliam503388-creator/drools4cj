@@ -43,7 +43,7 @@ public class WorkingMemory {
         if (!typeIndex.contains(fact.type)) {
             typeIndex[fact.type] = ArrayList<Fact>()
         }
-        typeIndex[fact.type]?.append(fact)
+        typeIndex[fact.type]?.add(fact)
 
         println("[WorkingMemory] ➕ 插入事实: ${fact.type}:${fact.id} (v${version})")
 
@@ -77,8 +77,10 @@ public class WorkingMemory {
             return false
         }
 
-        let fact = facts[factId]
-        let factType = fact.type
+        var factType = ""
+        if (let fact = facts[factId]) {
+            factType = fact.type
+        }
 
         facts.remove(factId)
         versions.remove(factId)
@@ -102,7 +104,7 @@ public class WorkingMemory {
      * 根据ID获取事实
      */
     public func getFact(id: String): Option<Fact> {
-        return Some(facts[id])
+        return facts[id]
     }
 
     /**
@@ -127,7 +129,7 @@ public class WorkingMemory {
      * 获取事实版本
      */
     public func getVersion(factId: String): Option<Int64> {
-        return Some(versions[factId])
+        return versions[factId]
     }
 
     /**

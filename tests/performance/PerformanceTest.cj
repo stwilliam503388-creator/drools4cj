@@ -6,12 +6,12 @@
 
 package tests.performance
 
+import std.collection.ArrayList
 import core.*
 import core.RuleEngine
 import core.RuleBuilder
 import core.OrderFact
 import core.PropertyValue
-import std.time.*
 
 /**
  * 性能测试
@@ -55,7 +55,7 @@ class PerformanceTest {
                 "ORDER-${i}",
                 if (i % 2 == 0) { "普通" } else { "VIP" },
                 (i % 10000).toFloat64() * 100.0,
-                (i % 20).toUint64()
+                i % 20
             ))
         }
 
@@ -86,7 +86,7 @@ class PerformanceTest {
         for (i in 0..100) {
             engine.addRule(
                 RuleBuilder("规则${i}")
-                    .salience((i % 10).toUint64() * 10)
+                    .salience((i % 10) * 10)
                     .when("amount", ">", PropertyValue((i * 100).toFloat64()))
                     .then({ })
                     .build()
@@ -99,7 +99,7 @@ class PerformanceTest {
                 "ORDER-${i}",
                 if (i % 3 == 0) { "VIP" } else { "普通" },
                 (i % 1000).toFloat64() * 10.0,
-                (i % 15).toUint64()
+                i % 15
             ))
         }
 
@@ -135,10 +135,10 @@ class PerformanceTest {
         for (i in 0..50) {
             engine.addRule(
                 RuleBuilder("大规模规则${i}")
-                    .salience((50 - i).toUint64())
+                    .salience(50 - i)
                     .when(if (i % 3 == 0) { "amount" } else if (i % 3 == 1) { "items" } else { "customer" },
                           if (i % 2 == 0) { ">" } else { "<" },
-                          PropertyValue((i * 50).toUint64()))
+                          PropertyValue(i * 50))
                     .then({ })
                     .build()
             )
@@ -147,11 +147,18 @@ class PerformanceTest {
         // 5000 个事实
         let factCount = 5000
         for (i in 0..factCount) {
+            let customerType = match (i % 5) {
+                case 0 => "普通"
+                case 1 => "银卡"
+                case 2 => "金卡"
+                case 3 => "VIP"
+                case _ => "钻石"
+            }
             engine.insert(OrderFact(
                 "ORDER-${i}",
-                ["普通", "银卡", "金卡", "VIP", "钻石"][i % 5],
+                customerType,
                 (i % 10000).toFloat64() * 1.5,
-                (i % 30).toUint64()
+                i % 30
             ))
         }
 
@@ -182,7 +189,11 @@ class PerformanceTest {
         let engine = RuleEngine()
 
         // 测试不同规模的内存使用
-        let scales = [1000, 5000, 10000, 50000]
+        let scales = ArrayList<Int64>()
+        scales.add(1000)
+        scales.add(5000)
+        scales.add(10000)
+        scales.add(50000)
 
         for (scale in scales) {
             engine.reset()
@@ -191,8 +202,8 @@ class PerformanceTest {
                 engine.insert(OrderFact(
                     "ORDER-${i}",
                     "普通",
-                    1000.0.toFloat64(),
-                    5.toUint64()
+                    1000.0,
+                    5
                 ))
             }
 
@@ -229,8 +240,10 @@ class PerformanceTest {
         println("📊 测试结果汇总:")
         println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
-        for ((index, result) in results.enumerated()) {
-            println("${(index + 1)}. ${result}")
+        var index = 0
+        for (result in results) {
+            println("${index + 1}. ${result}")
+            index++
         }
 
         println("\n💡 性能分析:")
