@@ -68,6 +68,15 @@ public class ApprovalRequest : Fact {
                     case _ => return false
                 }
             }
+            case "attachments" => {
+                match (condition.operator) {
+                    case "=" => return attachments == condition.value.asInt64()
+                    case "!=" => return attachments != condition.value.asInt64()
+                    case ">" => return attachments > condition.value.asInt64()
+                    case "<" => return attachments < condition.value.asInt64()
+                    case _ => return false
+                }
+            }
             case _ => return false
         }
         return false
