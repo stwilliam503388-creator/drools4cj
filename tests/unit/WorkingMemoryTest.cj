@@ -53,6 +53,11 @@ class WorkingMemoryTest {
         testGetSize()
         testTypeIndex()
         testClear()
+        testContains()
+        testGetVersion()
+        testUpdateNonExistent()
+        testRetractNonExistent()
+        testTypeIndexCleanupOnRetract()
 
         printResults()
         return failed == 0
@@ -304,6 +309,122 @@ class WorkingMemoryTest {
         }
 
         println("\n" + "=".repeat(50))
+    }
+
+    /**
+     * 测试 contains() 方法
+     */
+    private func testContains() {
+        println("🧪 测试: contains()")
+
+        let wm = WorkingMemory()
+
+        assert(!wm.contains("ORDER-001"), "插入前事实不应存在")
+
+        wm.insert(OrderFact("ORDER-001", "普通", 1000.0, 3))
+        assert(wm.contains("ORDER-001"), "插入后事实应存在")
+        assert(!wm.contains("ORDER-002"), "未插入的事实不应存在")
+
+        wm.retract("ORDER-001")
+        assert(!wm.contains("ORDER-001"), "撤回后事实不应存在")
+
+        println("")
+    }
+
+    /**
+     * 测试 getVersion() 方法
+     */
+    private func testGetVersion() {
+        println("🧪 测试: getVersion()")
+
+        let wm = WorkingMemory()
+        let order = OrderFact("ORDER-001", "普通", 1000.0, 3)
+
+        let insertVersion = wm.insert(order)
+
+        // 插入后版本应与返回的版本一致
+        match (wm.getVersion("ORDER-001")) {
+            case Some(v) => assertEquals(insertVersion, v, "getVersion 应返回插入时的版本号")
+            case None => assert(false, "插入后应能获取版本号")
+        }
+
+        // 更新后版本号应增加
+        let updatedOrder = OrderFact("ORDER-001", "VIP", 2000.0, 5)
+        wm.update(updatedOrder)
+
+        match (wm.getVersion("ORDER-001")) {
+            case Some(v) => assert(v > insertVersion, "更新后版本号应增加")
+            case None => assert(false, "更新后应能获取版本号")
+        }
+
+        println("")
+    }
+
+    /**
+     * 测试 update() 非存在事实应返回 false
+     */
+    private func testUpdateNonExistent() {
+        println("🧪 测试: update() 非存在事实应返回 false")
+
+        let wm = WorkingMemory()
+        let nonExistentOrder = OrderFact("NON-EXISTENT", "普通", 1000.0, 3)
+
+        let success = wm.update(nonExistentOrder)
+        assert(!success, "更新不存在的事实应返回 false")
+        assertEquals(0, wm.getSize(), "工作内存大小不应改变")
+
+        println("")
+    }
+
+    /**
+     * 测试 retract() 非存在事实应返回 false
+     */
+    private func testRetractNonExistent() {
+        println("🧪 测试: retract() 非存在事实应返回 false")
+
+        let wm = WorkingMemory()
+
+        let success = wm.retract("NON-EXISTENT")
+        assert(!success, "撤回不存在的事实应返回 false")
+
+        // 插入一个事实后,撤回不存在的不影响现有事实
+        wm.insert(OrderFact("ORDER-001", "普通", 1000.0, 3))
+        let successAfterInsert = wm.retract("NON-EXISTENT")
+        assert(!successAfterInsert, "撤回不存在的事实仍应返回 false")
+        assertEquals(1, wm.getSize(), "现有事实不应受影响")
+
+        println("")
+    }
+
+    /**
+     * 测试撤回最后一个事实时类型索引被清理
+     */
+    private func testTypeIndexCleanupOnRetract() {
+        println("🧪 测试: 撤回最后一个同类型事实时类型索引被清理")
+
+        let wm = WorkingMemory()
+
+        wm.insert(OrderFact("ORDER-001", "普通", 1000.0, 3))
+        wm.insert(ProductFact("PROD-001", "iPhone", 7999.0, 50))
+
+        let statsBefore = wm.getTypeStats()
+        assertEquals(2, statsBefore.size, "插入后应有 2 种类型")
+
+        // 撤回所有 Order 类型事实
+        wm.retract("ORDER-001")
+
+        let statsAfter = wm.getTypeStats()
+        assertEquals(1, statsAfter.size, "撤回所有 Order 后应只剩 1 种类型")
+
+        // Order 类型应从索引中移除
+        let orderFacts = wm.getFactsByType("Order")
+        assertEquals(0, orderFacts.size, "Order 类型不应再有事实")
+
+        // Product 类型不受影响
+        let productFacts = wm.getFactsByType("Product")
+        assertEquals(1, productFacts.size, "Product 类型应仍有 1 个事实")
+
+        println("")
     }
 }
 

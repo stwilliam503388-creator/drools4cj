@@ -56,6 +56,10 @@ class FactTest {
         testCustomerFactCreation()
         testCustomerFactLevelConditions()
         testCustomerFactPointsConditions()
+        testCustomerFactTotalOrdersConditions()
+        testOrderFactUnknownField()
+        testOrderFactUnknownOperator()
+        testProductFactUnknownField()
 
         printResults()
         return failed == 0
@@ -307,6 +311,95 @@ class FactTest {
         }
 
         println("\n" + "=".repeat(50))
+    }
+
+    /**
+     * 测试 CustomerFact 总订单数条件
+     */
+    private func testCustomerFactTotalOrdersConditions() {
+        println("🧪 测试: CustomerFact 总订单数条件匹配")
+
+        let customer = CustomerFact("CUST-005", "钱七", "金卡", 3000, 25)
+
+        // 大于
+        let cond1 = Condition("totalOrders", ">", PropertyValue(20))
+        assert(customer.matches(cond1), "订单数 25 > 20 应匹配")
+
+        // 小于
+        let cond2 = Condition("totalOrders", "<", PropertyValue(30))
+        assert(customer.matches(cond2), "订单数 25 < 30 应匹配")
+
+        // 大于等于
+        let cond3 = Condition("totalOrders", ">=", PropertyValue(25))
+        assert(customer.matches(cond3), "订单数 25 >= 25 应匹配")
+
+        // 小于等于
+        let cond4 = Condition("totalOrders", "<=", PropertyValue(25))
+        assert(customer.matches(cond4), "订单数 25 <= 25 应匹配")
+
+        // 不匹配
+        let cond5 = Condition("totalOrders", ">", PropertyValue(30))
+        assert(!customer.matches(cond5), "订单数 25 > 30 不应匹配")
+
+        println("")
+    }
+
+    /**
+     * 测试 OrderFact 未知字段返回 false
+     */
+    private func testOrderFactUnknownField() {
+        println("🧪 测试: OrderFact 未知字段返回 false")
+
+        let order = OrderFact("ORDER-005", "普通", 1000.0, 5)
+
+        let cond = Condition("unknownField", ">", PropertyValue(100.0))
+        assert(!order.matches(cond), "未知字段的条件应返回 false")
+
+        let cond2 = Condition("price", "=", PropertyValue(1000.0))
+        assert(!order.matches(cond2), "OrderFact 不支持的字段 price 应返回 false")
+
+        println("")
+    }
+
+    /**
+     * 测试 OrderFact 未知运算符返回 false
+     */
+    private func testOrderFactUnknownOperator() {
+        println("🧪 测试: OrderFact 未知运算符返回 false")
+
+        let order = OrderFact("ORDER-006", "普通", 1000.0, 5)
+
+        // 未知运算符
+        let cond1 = Condition("amount", "~", PropertyValue(1000.0))
+        assert(!order.matches(cond1), "未知运算符 '~' 应返回 false")
+
+        // items 字段的未知运算符
+        let cond2 = Condition("items", "like", PropertyValue(5))
+        assert(!order.matches(cond2), "未知运算符 'like' 应返回 false")
+
+        // customer 字段的未知运算符
+        let cond3 = Condition("customer", ">", PropertyValue("VIP"))
+        assert(!order.matches(cond3), "customer 字段不支持 '>' 运算符应返回 false")
+
+        println("")
+    }
+
+    /**
+     * 测试 ProductFact 未知字段返回 false
+     */
+    private func testProductFactUnknownField() {
+        println("🧪 测试: ProductFact 未知字段返回 false")
+
+        let product = ProductFact("PROD-006", "测试产品", 1000.0, 10)
+
+        let cond = Condition("unknownField", ">", PropertyValue(100.0))
+        assert(!product.matches(cond), "ProductFact 未知字段的条件应返回 false")
+
+        // customer 字段在 ProductFact 中不存在
+        let cond2 = Condition("customer", "=", PropertyValue("VIP"))
+        assert(!product.matches(cond2), "ProductFact 不支持的字段 customer 应返回 false")
+
+        println("")
     }
 }
 
