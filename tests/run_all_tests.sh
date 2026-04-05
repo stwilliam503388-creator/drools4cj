@@ -93,6 +93,8 @@ echo ""
 run_test "tests/unit/FactTest.cj" "Fact 类测试"
 run_test "tests/unit/WorkingMemoryTest.cj" "WorkingMemory 类测试"
 run_test "tests/unit/RuleEngineTest.cj" "RuleEngine 类测试"
+run_test "tests/unit/RuleTest.cj" "Rule/RuleBuilder/PropertyValue/Condition 类测试"
+run_test "tests/unit/AgendaTest.cj" "PatternMatcher 和 Agenda 类测试"
 
 # 集成测试
 echo "📋 集成测试"

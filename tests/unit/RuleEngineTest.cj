@@ -8,6 +8,7 @@ package tests.unit
 
 import core.*
 import core.RuleEngine
+import core.RuleEngineBuilder
 import core.RuleBuilder
 import core.OrderFact
 import core.PropertyValue
@@ -50,6 +51,10 @@ class RuleEngineTest {
         testFireAllRules()
         testReset()
         testStats()
+        testUpdateFact()
+        testRetractFact()
+        testRuleEngineBuilder()
+        testMaxFactsLimit()
 
         printResults()
         return failed == 0
@@ -250,6 +255,122 @@ class RuleEngineTest {
         }
 
         println("\n" + "=".repeat(50))
+    }
+
+    /**
+     * 测试更新事实
+     */
+    private func testUpdateFact() {
+        println("🧪 测试: 更新事实")
+
+        let engine = RuleEngine()
+
+        engine.addRule(
+            RuleBuilder("VIP规则")
+                .when("customer", "=", PropertyValue("VIP"))
+                .then({ })
+                .build()
+        )
+
+        engine.insert(OrderFact("ORDER-001", "普通", 1000.0, 3))
+        assertEquals(1, engine.getWorkingMemory().getSize(), "插入后应有 1 个事实")
+
+        // 更新事实
+        let success = engine.update(OrderFact("ORDER-001", "VIP", 2000.0, 8))
+        assert(success, "更新应成功")
+        assertEquals(1, engine.getWorkingMemory().getSize(), "更新后事实数量不变")
+
+        let updateStats = engine.getStats()
+        assertEquals(1, updateStats.totalFactsUpdated, "更新统计应为 1")
+
+        // 更新不存在的事实应失败
+        let failSuccess = engine.update(OrderFact("NON-EXISTENT", "普通", 100.0, 1))
+        assert(!failSuccess, "更新不存在的事实应失败")
+
+        println("")
+    }
+
+    /**
+     * 测试撤回事实
+     */
+    private func testRetractFact() {
+        println("🧪 测试: 撤回事实")
+
+        let engine = RuleEngine()
+
+        engine.insert(OrderFact("ORDER-001", "普通", 1000.0, 3))
+        engine.insert(OrderFact("ORDER-002", "VIP", 2000.0, 8))
+        assertEquals(2, engine.getWorkingMemory().getSize(), "插入后应有 2 个事实")
+
+        // 撤回一个事实
+        let success = engine.retract("ORDER-001")
+        assert(success, "撤回应成功")
+        assertEquals(1, engine.getWorkingMemory().getSize(), "撤回后应剩 1 个事实")
+
+        let retractStats = engine.getStats()
+        assertEquals(1, retractStats.totalFactsRetracted, "撤回统计应为 1")
+
+        // 撤回不存在的事实应失败
+        let failSuccess = engine.retract("NON-EXISTENT")
+        assert(!failSuccess, "撤回不存在的事实应失败")
+
+        println("")
+    }
+
+    /**
+     * 测试 RuleEngineBuilder
+     */
+    private func testRuleEngineBuilder() {
+        println("🧪 测试: RuleEngineBuilder")
+
+        // 测试构建器能构建有效的引擎
+        let engine = RuleEngineBuilder()
+            .enableLog(false)
+            .enableStats(true)
+            .maxFacts(500)
+            .build()
+
+        // 引擎应正常工作
+        engine.addRule(
+            RuleBuilder("测试规则")
+                .when("amount", ">", PropertyValue(100.0))
+                .then({ })
+                .build()
+        )
+        assertEquals(1, engine.getRules().size, "引擎应有 1 条规则")
+
+        let version = engine.insert(OrderFact("ORDER-001", "普通", 500.0, 3))
+        assert(version > 0, "插入应返回正版本号")
+        assertEquals(1, engine.getWorkingMemory().getSize(), "工作内存应有 1 个事实")
+
+        println("")
+    }
+
+    /**
+     * 测试最大事实数限制
+     */
+    private func testMaxFactsLimit() {
+        println("🧪 测试: 最大事实数限制")
+
+        // 创建最多允许 2 个事实的引擎
+        let engine = RuleEngineBuilder()
+            .enableLog(false)
+            .maxFacts(2)
+            .build()
+
+        let v1 = engine.insert(OrderFact("ORDER-001", "普通", 1000.0, 3))
+        let v2 = engine.insert(OrderFact("ORDER-002", "VIP", 2000.0, 5))
+
+        assert(v1 > 0, "第 1 次插入应成功")
+        assert(v2 > 0, "第 2 次插入应成功")
+        assertEquals(2, engine.getWorkingMemory().getSize(), "应有 2 个事实")
+
+        // 第 3 次插入应被拒绝
+        let v3 = engine.insert(OrderFact("ORDER-003", "普通", 500.0, 2))
+        assertEquals(-1, v3, "超过最大事实数时插入应返回 -1")
+        assertEquals(2, engine.getWorkingMemory().getSize(), "事实数不应超过最大值")
+
+        println("")
     }
 }
 
