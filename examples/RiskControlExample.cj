@@ -4,16 +4,21 @@
  * 说明: 演示如何使用规则引擎实现实时风控系统
  */
 
-package core
+package examples
 
 import std.collection.ArrayList
+import core.*
+import core.Fact
+import core.Condition
+import core.PropertyValue
+import core.RuleEngine
+import core.RuleEngineBuilder
+import core.RuleBuilder
 
 /**
  * 交易事实
  */
 public class TransactionFact : Fact {
-    public var type: String
-    public var id: String
     public var amount: Float64
     public var location: String
     public var device: String
@@ -22,8 +27,7 @@ public class TransactionFact : Fact {
     public var transactionTime: String
 
     public init(id: String, userId: String, amount: Float64, location: String, device: String, userRiskLevel: String) {
-        this.type = "Transaction"
-        this.id = id
+        super("Transaction", id)
         this.userId = userId
         this.amount = amount
         this.location = location
@@ -32,7 +36,7 @@ public class TransactionFact : Fact {
         this.transactionTime = "2026-03-08 12:00:00"
     }
 
-    public func matches(condition: Condition): Bool {
+    public override func matches(condition: Condition): Bool {
         match (condition.field) {
             case "amount" => {
                 match (condition.operator) {

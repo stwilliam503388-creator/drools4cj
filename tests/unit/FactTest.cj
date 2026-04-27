@@ -6,6 +6,7 @@
 
 package tests.unit
 
+import std.collection.ArrayList
 import core.*
 import core.Fact
 import core.OrderFact

@@ -129,10 +129,10 @@ public class RuleEngine {
 
         // 增量匹配
         let matches = patternMatcher.incrementalMatch(rules, fact)
-        for (match in matches) {
+        for (m in matches) {
             stats.totalMatches++
-            listener?.onMatch(match.rule, match.facts[0])
-            agenda.addActivation(match.rule, match.facts)
+            listener?.onMatch(m.rule, m.facts[0])
+            agenda.addActivation(m.rule, m.facts)
         }
 
         return version
@@ -177,12 +177,12 @@ public class RuleEngine {
 
         // 模式匹配
         let matches = patternMatcher.matchRules(rules)
-        stats.totalMatches += matches.size.toUint64()
+        stats.totalMatches += matches.size
 
         // 填充议程
-        for (match in matches) {
-            listener?.onMatch(match.rule, match.facts[0])
-            agenda.addActivation(match.rule, match.facts)
+        for (m in matches) {
+            listener?.onMatch(m.rule, m.facts[0])
+            agenda.addActivation(m.rule, m.facts)
         }
 
         // 触发所有规则
@@ -207,8 +207,8 @@ public class RuleEngine {
 
         // 重新匹配所有规则
         let matches = patternMatcher.matchRules(rules)
-        for (match in matches) {
-            agenda.addActivation(match.rule, match.facts)
+        for (m in matches) {
+            agenda.addActivation(m.rule, m.facts)
         }
     }
 

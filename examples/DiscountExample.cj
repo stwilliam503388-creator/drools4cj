@@ -19,7 +19,7 @@ main() {
     println("")
 
     // 1. 创建规则引擎
-    val engine = RuleEngineBuilder()
+    let engine = RuleEngineBuilder()
         .enableLog(true)
         .enableStats(true)
         .build()

@@ -6,6 +6,7 @@
 
 package tests.integration
 
+import std.collection.ArrayList
 import core.*
 import core.RuleEngine
 import core.RuleBuilder
