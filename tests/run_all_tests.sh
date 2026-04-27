@@ -91,7 +91,11 @@ echo "════════════════════════�
 echo ""
 
 run_test "tests/unit/FactTest.cj" "Fact 类测试"
+run_test "tests/unit/FactEdgeCasesTest.cj" "Fact 边界情况测试"
 run_test "tests/unit/WorkingMemoryTest.cj" "WorkingMemory 类测试"
+run_test "tests/unit/WorkingMemoryEdgeCasesTest.cj" "WorkingMemory 边界情况测试"
+run_test "tests/unit/RuleTest.cj" "Rule/PropertyValue/Condition/RuleBuilder 测试"
+run_test "tests/unit/MatcherAndAgendaTest.cj" "PatternMatcher 和 Agenda 测试"
 run_test "tests/unit/RuleEngineTest.cj" "RuleEngine 类测试"
 
 # 集成测试
@@ -100,6 +104,7 @@ echo "════════════════════════�
 echo ""
 
 run_test "tests/integration/DiscountRulesIntegrationTest.cj" "折扣规则集成测试"
+run_test "tests/integration/RuleEngineAdvancedTest.cj" "RuleEngine 高级集成测试"
 
 # 性能测试
 echo "📋 性能测试"
